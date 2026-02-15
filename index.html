@@ -11,422 +11,545 @@
 
   body {
     min-height: 100vh;
-    background: #0a0a0f;
-    color: #f0e6d3;
+    background: #1a0008;
+    color: #fff;
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
   }
 
-  canvas#particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 720px;
-    width: 90%;
-    text-align: center;
-    padding: 60px 20px;
-  }
+  canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  #bg-canvas { z-index: 0; }
+  #fireworks-canvas { z-index: 2; }
+  #confetti-canvas { z-index: 3; }
 
   .intro {
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    background: #0a0a0f;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    cursor: pointer;
-    transition: opacity 1.2s ease, visibility 1.2s ease;
+    background: radial-gradient(ellipse at center, #2a0012 0%, #0d0004 100%);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; cursor: pointer;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
   }
-  .intro.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+  .intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .intro-heart {
+    width: 120px; height: 120px;
+    position: relative;
+    animation: intro-pulse 1.5s ease-in-out infinite;
+    margin-bottom: 40px;
   }
+  .intro-heart svg { width: 100%; height: 100%; filter: drop-shadow(0 0 30px rgba(255,40,80,0.6)); }
+
   .intro-text {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    color: #c9a96e;
-    letter-spacing: 0.15em;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: #ff6b8a;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    animation: pulse-glow 2.5s ease-in-out infinite;
+    text-shadow: 0 0 40px rgba(255,60,90,0.4);
   }
   .intro-sub {
-    margin-top: 16px;
-    font-size: 0.85rem;
-    color: #665e50;
-    letter-spacing: 0.3em;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #994060;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  .intro-hint {
+    position: absolute; bottom: 60px;
+    font-size: 0.75rem; color: #663040;
+    letter-spacing: 0.2em; text-transform: uppercase;
   }
 
-  .heart-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 40px;
+  .content {
+    position: relative; z-index: 1;
+    max-width: 760px; width: 92%;
+    margin: 0 auto;
+    padding: 80px 20px 100px;
+    display: none;
+  }
+
+  .heart-header {
+    text-align: center;
+    margin-bottom: 60px;
     opacity: 0;
-    animation: fade-up 1.2s ease forwards;
-    animation-delay: 0.4s;
   }
-  .heart-line .line {
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #c9a96e, transparent);
-  }
-  .heart-line .heart {
-    font-size: 1.4rem;
-    color: #c9a96e;
-    animation: heartbeat 1.8s ease-in-out infinite;
+  .heart-header.show { animation: fade-scale 1.2s ease forwards; }
+
+  .heart-header svg {
+    width: 100px; height: 90px;
+    filter: drop-shadow(0 0 40px rgba(255,40,80,0.5));
+    animation: heartbeat 1.6s ease-in-out infinite;
   }
 
   .heading {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    font-size: clamp(2.6rem, 8vw, 4.8rem);
     font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 8px;
-    opacity: 0;
-    background: linear-gradient(135deg, #f0e6d3 0%, #c9a96e 50%, #f0e6d3 100%);
-    background-size: 200% auto;
+    line-height: 1.1;
+    margin: 20px 0 10px;
+    background: linear-gradient(135deg, #ff6b8a 0%, #ff3c5a 30%, #ff8fa3 60%, #ffb3c1 100%);
+    background-size: 300% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: fade-up 1.4s ease forwards, shimmer 4s ease-in-out infinite;
-    animation-delay: 0.8s, 0s;
+    animation: color-shift 6s ease-in-out infinite;
   }
 
   .subheading {
     font-family: 'Playfair Display', serif;
     font-style: italic;
-    font-size: clamp(1.1rem, 3vw, 1.6rem);
-    color: #c9a96e;
-    margin-bottom: 50px;
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    color: #ff8fa3;
     opacity: 0;
-    animation: fade-up 1.4s ease forwards;
-    animation-delay: 1.2s;
+    text-shadow: 0 0 30px rgba(255,100,140,0.3);
   }
+  .subheading.show { animation: fade-up 1.2s ease forwards 0.4s; }
+
+  .tap-prompt {
+    text-align: center;
+    margin: 30px 0 50px;
+    font-size: 0.8rem;
+    color: #884060;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0;
+  }
+  .tap-prompt.show { animation: fade-up 1s ease forwards 1s; }
+
+  .divider {
+    width: 200px;
+    height: 2px;
+    margin: 45px auto;
+    background: linear-gradient(90deg, transparent, #ff3c5a, #ff6b8a, #ff3c5a, transparent);
+    border-radius: 2px;
+    opacity: 0; transform: scaleX(0);
+  }
+  .divider.show { animation: line-grow 0.8s ease forwards; }
 
   .message {
     text-align: left;
-    margin-bottom: 40px;
-    opacity: 0;
-    transform: translateY(30px);
+    margin-bottom: 36px;
+    opacity: 0; transform: translateY(40px);
   }
-  .message.visible {
-    animation: fade-up 1s ease forwards;
-  }
+  .message.show { animation: fade-up 0.9s ease forwards; }
   .message p {
-    font-size: clamp(1rem, 2.2vw, 1.15rem);
-    line-height: 1.85;
-    color: #d4c8b5;
+    font-size: clamp(1.05rem, 2.4vw, 1.2rem);
+    line-height: 1.9;
+    color: #ffd6de;
     font-weight: 300;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
-  .message p strong {
-    color: #c9a96e;
-    font-weight: 500;
-  }
-  .message p em {
-    font-style: italic;
-    color: #e0d5c4;
-  }
-
-  .divider {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #c9a96e33, transparent);
-    margin: 40px 0;
-    opacity: 0;
-  }
-  .divider.visible { animation: fade-up 1s ease forwards; }
+  .message p strong { color: #ff6b8a; font-weight: 500; }
+  .message p em { font-style: italic; color: #ffb3c1; }
 
   .signature {
     text-align: center;
-    margin-top: 50px;
-    opacity: 0;
-    transform: translateY(30px);
+    margin-top: 60px;
+    opacity: 0; transform: translateY(40px);
   }
-  .signature.visible {
-    animation: fade-up 1.2s ease forwards;
-  }
+  .signature.show { animation: fade-up 1.2s ease forwards; }
   .signature .love {
     font-family: 'Playfair Display', serif;
     font-style: italic;
-    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
-    color: #c9a96e;
-    margin-bottom: 6px;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: #ff8fa3;
+    margin-bottom: 8px;
+    text-shadow: 0 0 30px rgba(255,100,140,0.3);
   }
   .signature .name {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(2.8rem, 7vw, 4rem);
     font-weight: 700;
-    color: #f0e6d3;
-    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #ff3c5a, #ff6b8a, #ffb3c1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(255,60,90,0.3));
   }
   .signature .date {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #665e50;
-    letter-spacing: 0.25em;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: #884060;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
   }
+  .signature .forever {
+    margin-top: 40px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #663040;
+  }
 
-  .floating-heart {
-    position: fixed;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0;
-    font-size: 1.2rem;
-    animation: float-up 6s ease-in forwards;
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(100px); z-index: 0; pointer-events: none;
+  }
+  .orb.a {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,60,90,0.12) 0%, transparent 70%);
+    top: -10%; left: -10%;
+    animation: orb-drift 18s ease-in-out infinite alternate;
+  }
+  .orb.b {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,100,140,0.08) 0%, transparent 70%);
+    bottom: -5%; right: -10%;
+    animation: orb-drift 22s ease-in-out infinite alternate-reverse;
+  }
+  .orb.c {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(200,40,80,0.1) 0%, transparent 70%);
+    top: 40%; left: 50%;
+    animation: orb-drift 15s ease-in-out infinite alternate;
   }
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-scale {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes line-grow {
+    from { opacity: 0; transform: scaleX(0); }
+    to { opacity: 1; transform: scaleX(1); }
   }
   @keyframes heartbeat {
     0%, 100% { transform: scale(1); }
-    15% { transform: scale(1.25); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.15); }
-    60% { transform: scale(1); }
+    14% { transform: scale(1.2); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.12); }
+    56% { transform: scale(1); }
+  }
+  @keyframes intro-pulse {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.08); filter: brightness(1.2); }
   }
   @keyframes pulse-glow {
-    0%, 100% { opacity: 0.7; }
+    0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
-  @keyframes shimmer {
+  @keyframes color-shift {
     0%, 100% { background-position: 0% center; }
-    50% { background-position: 200% center; }
+    50% { background-position: 300% center; }
   }
-  @keyframes float-up {
-    0% { opacity: 0; transform: translateY(0) rotate(0deg); }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.3; }
-    100% { opacity: 0; transform: translateY(-100vh) rotate(45deg); }
-  }
-
-  .glow-orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    z-index: 0;
-    pointer-events: none;
-  }
-  .glow-orb.one {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%);
-    top: 10%; left: -5%;
-    animation: drift 20s ease-in-out infinite alternate;
-  }
-  .glow-orb.two {
-    width: 350px; height: 350px;
-    background: radial-gradient(circle, rgba(180,120,80,0.06) 0%, transparent 70%);
-    bottom: 5%; right: -5%;
-    animation: drift 25s ease-in-out infinite alternate-reverse;
-  }
-  @keyframes drift {
+  @keyframes orb-drift {
     from { transform: translate(0, 0); }
-    to { transform: translate(40px, -30px); }
+    to { transform: translate(50px, -40px); }
   }
 
   @media (max-width: 600px) {
-    .container { padding: 40px 16px; }
-    .message p { font-size: 1rem; line-height: 1.75; }
+    .content { padding: 60px 16px 80px; }
+    .message p { font-size: 1.05rem; line-height: 1.8; }
   }
 </style>
 </head>
 <body>
 
-<div class="intro" id="intro" onclick="startExperience()">
+<div class="intro" id="intro" onclick="begin()">
+  <div class="intro-heart">
+    <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#ff3c5a"/>
+          <stop offset="50%" style="stop-color:#ff1744"/>
+          <stop offset="100%" style="stop-color:#d50032"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 88 C25 65, 0 45, 0 25 C0 10, 12 0, 25 0 C35 0, 45 8, 50 18 C55 8, 65 0, 75 0 C88 0, 100 10, 100 25 C100 45, 75 65, 50 88Z" fill="url(#hg)"/>
+    </svg>
+  </div>
   <div class="intro-text">A Message For You, Asher</div>
-  <div class="intro-sub">tap anywhere to open</div>
+  <div class="intro-sub">from Dada</div>
+  <div class="intro-hint">tap anywhere</div>
 </div>
 
-<div class="glow-orb one"></div>
-<div class="glow-orb two"></div>
+<div class="orb a"></div>
+<div class="orb b"></div>
+<div class="orb c"></div>
 
-<canvas id="particles"></canvas>
+<canvas id="bg-canvas"></canvas>
+<canvas id="fireworks-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
 
-<div class="container" id="content" style="display:none;">
+<div class="content" id="content">
 
-  <div class="heart-line">
-    <div class="line"></div>
-    <div class="heart">&#10084;</div>
-    <div class="line"></div>
+  <div class="heart-header" data-anim>
+    <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hg2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#ff6b8a"/>
+          <stop offset="50%" style="stop-color:#ff3c5a"/>
+          <stop offset="100%" style="stop-color:#d50032"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 88 C25 65, 0 45, 0 25 C0 10, 12 0, 25 0 C35 0, 45 8, 50 18 C55 8, 65 0, 75 0 C88 0, 100 10, 100 25 C100 45, 75 65, 50 88Z" fill="url(#hg2)"/>
+    </svg>
+    <h1 class="heading">Happy Valentine's Day, Asher</h1>
   </div>
 
-  <h1 class="heading">Happy Valentine's Day, Asher</h1>
-  <p class="subheading">From Dada, with everything I've got</p>
+  <p class="subheading" data-anim>From Dada, with everything I've got</p>
 
-  <div class="message" data-reveal>
+  <p class="tap-prompt" data-anim>tap anywhere for heart fireworks</p>
+
+  <div class="divider" data-anim></div>
+
+  <div class="message" data-anim>
     <p>
       Hey buddy. I know Valentine's Day isn't just about romance &mdash;
-      it's about <strong>love</strong>. And there's nobody I love more fiercely
-      in this world than you.
+      it's about <strong>love</strong>. And there is nobody on this planet
+      I love more fiercely than you.
     </p>
   </div>
 
-  <div class="message" data-reveal>
+  <div class="message" data-anim>
     <p>
-      I think about you constantly. About the little boy who used to call me
+      I think about you all the time. About the little boy who used to call me
       <em>"Dada"</em> &mdash; and about the <strong>incredible young man</strong>
       you've become at 21. You impress me in ways I can't even put into words.
-      Your heart, your mind, the way you carry yourself &mdash; you're everything
-      a father could dream of and so much more.
+      Your heart, your mind, the way you carry yourself &mdash; you are everything
+      a father could ever dream of and so much more.
     </p>
   </div>
 
-  <div class="divider" data-reveal></div>
+  <div class="divider" data-anim></div>
 
-  <div class="message" data-reveal>
+  <div class="message" data-anim>
     <p>
-      I want you to know something: <strong>I'm proud of you.</strong>
-      Not for what you do, but for <em>who you are</em>.
+      I want you to know something: <strong>I am so proud of you.</strong>
+      Not for what you do &mdash; but for <em>who you are</em>.
       You're kind. You're strong. You're thoughtful.
       You make the world better just by being in it.
     </p>
   </div>
 
-  <div class="message" data-reveal>
+  <div class="message" data-anim>
     <p>
-      I wish I could be with you today. But even when we're apart,
-      you're never far from my heart. Not for a second. Not ever.
+      I wish I could be with you today. But even when we're miles apart,
+      you are never far from my heart. Not for a single second. Not ever.
     </p>
   </div>
 
-  <div class="divider" data-reveal></div>
+  <div class="divider" data-anim></div>
 
-  <div class="message" data-reveal>
+  <div class="message" data-anim>
     <p>
       Keep being exactly who you are, Asher. The world needs people like you.
-      <strong>I need people like you.</strong> You're my greatest blessing,
+      <strong>I need people like you.</strong> You are my greatest blessing,
       my proudest achievement, and my best friend.
     </p>
   </div>
 
-  <div class="signature" data-reveal>
+  <div class="signature" data-anim>
     <div class="love">With all my love, always and forever,</div>
     <div class="name">Dada</div>
     <div class="date">Valentine's Day &bull; February 14, 2026</div>
+    <div class="forever">you are loved beyond measure</div>
   </div>
 
 </div>
 
 <script>
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let particles = [];
-let animating = false;
+var bgC = document.getElementById('bg-canvas');
+var bgCtx = bgC.getContext('2d');
+var fwC = document.getElementById('fireworks-canvas');
+var fwCtx = fwC.getContext('2d');
+var cfC = document.getElementById('confetti-canvas');
+var cfCtx = cfC.getContext('2d');
+var bgParticles = [];
+var fireworks = [];
+var confetti = [];
+var started = false;
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function resizeAll() {
+  [bgC, fwC, cfC].forEach(function(c) { c.width = innerWidth; c.height = innerHeight; });
 }
-window.addEventListener('resize', resize);
-resize();
+addEventListener('resize', resizeAll);
+resizeAll();
 
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.size = Math.random() * 2 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.3;
-    this.speedY = (Math.random() - 0.5) * 0.3;
-    this.opacity = Math.random() * 0.4 + 0.1;
-    this.pulse = Math.random() * Math.PI * 2;
-    this.pulseSpeed = Math.random() * 0.02 + 0.005;
+function drawHeart(ctx, x, y, size, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  ctx.scale(size, size);
+  ctx.beginPath();
+  ctx.moveTo(0, -3);
+  ctx.bezierCurveTo(-5, -10, -14, -6, -14, 0);
+  ctx.bezierCurveTo(-14, 8, 0, 14, 0, 18);
+  ctx.bezierCurveTo(0, 14, 14, 8, 14, 0);
+  ctx.bezierCurveTo(14, -6, 5, -10, 0, -3);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function FloatingHeart(init) {
+  var hues = ['#ff3c5a','#ff6b8a','#ff8fa3','#d50032','#ff1744','#c62828','#e91e63','#f06292'];
+  this.x = Math.random() * innerWidth;
+  this.y = init ? Math.random() * innerHeight : innerHeight + 30;
+  this.size = Math.random() * 0.6 + 0.2;
+  this.speedY = -(Math.random() * 0.8 + 0.2);
+  this.speedX = (Math.random() - 0.5) * 0.4;
+  this.wobble = Math.random() * Math.PI * 2;
+  this.wobbleSpeed = Math.random() * 0.03 + 0.01;
+  this.alpha = Math.random() * 0.25 + 0.05;
+  this.color = hues[Math.floor(Math.random() * hues.length)];
+}
+FloatingHeart.prototype.update = function() {
+  this.y += this.speedY;
+  this.wobble += this.wobbleSpeed;
+  this.x += this.speedX + Math.sin(this.wobble) * 0.3;
+  if (this.y < -30) { FloatingHeart.call(this, false); }
+};
+FloatingHeart.prototype.draw = function() { drawHeart(bgCtx, this.x, this.y, this.size, this.color, this.alpha); };
+
+for (var i = 0; i < 50; i++) bgParticles.push(new FloatingHeart(true));
+
+function HeartFirework(x, y) {
+  this.particles = [];
+  var count = 30 + Math.floor(Math.random() * 20);
+  var hues = ['#ff3c5a','#ff6b8a','#ff1744','#ffb3c1','#d50032','#f06292','#ff80ab','#ff4081','#fff','#ffd6de'];
+  for (var i = 0; i < count; i++) {
+    var angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+    var speed = Math.random() * 5 + 2;
+    this.particles.push({
+      x: x, y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 0.5 + 0.2,
+      alpha: 1,
+      decay: Math.random() * 0.015 + 0.008,
+      color: hues[Math.floor(Math.random() * hues.length)],
+      isHeart: Math.random() > 0.3,
+      gravity: 0.03 + Math.random() * 0.02
+    });
   }
-  update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-    this.pulse += this.pulseSpeed;
-    if (this.x < -10 || this.x > canvas.width + 10 ||
-        this.y < -10 || this.y > canvas.height + 10) { this.reset(); }
+}
+HeartFirework.prototype.update = function() {
+  this.particles.forEach(function(p) {
+    p.x += p.vx; p.y += p.vy;
+    p.vy += p.gravity;
+    p.vx *= 0.985; p.vy *= 0.985;
+    p.alpha -= p.decay;
+  });
+  this.particles = this.particles.filter(function(p) { return p.alpha > 0; });
+};
+HeartFirework.prototype.draw = function() {
+  this.particles.forEach(function(p) {
+    if (p.isHeart) {
+      drawHeart(fwCtx, p.x, p.y, p.size, p.color, p.alpha);
+    } else {
+      fwCtx.globalAlpha = p.alpha;
+      fwCtx.beginPath();
+      fwCtx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+      fwCtx.fillStyle = p.color;
+      fwCtx.fill();
+      fwCtx.beginPath();
+      fwCtx.arc(p.x, p.y, p.size * 8, 0, Math.PI * 2);
+      fwCtx.fillStyle = p.color;
+      fwCtx.globalAlpha = p.alpha * 0.2;
+      fwCtx.fill();
+      fwCtx.globalAlpha = 1;
+    }
+  });
+};
+
+addEventListener('click', function(e) {
+  if (!started) return;
+  fireworks.push(new HeartFirework(e.clientX, e.clientY));
+  if (Math.random() > 0.4) {
+    setTimeout(function() { fireworks.push(new HeartFirework(
+      e.clientX + (Math.random()-0.5)*150,
+      e.clientY + (Math.random()-0.5)*150
+    )); }, 150);
   }
-  draw() {
-    const o = this.opacity * (0.6 + 0.4 * Math.sin(this.pulse));
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(201, 169, 110, ${o})`;
-    ctx.fill();
+  if (Math.random() > 0.6) {
+    setTimeout(function() { fireworks.push(new HeartFirework(
+      e.clientX + (Math.random()-0.5)*200,
+      e.clientY + (Math.random()-0.5)*200
+    )); }, 300);
   }
+});
+
+function Confetto(init) {
+  var colors = ['#ff3c5a','#ff6b8a','#ff1744','#d50032','#ff80ab','#f48fb1','#ffcdd2','#fff','#ffd6de'];
+  this.x = Math.random() * innerWidth;
+  this.y = init ? Math.random() * innerHeight : -10;
+  this.w = Math.random() * 8 + 3;
+  this.h = Math.random() * 4 + 2;
+  this.speedY = Math.random() * 1.5 + 0.5;
+  this.speedX = (Math.random() - 0.5) * 0.8;
+  this.rotation = Math.random() * 360;
+  this.rotSpeed = (Math.random() - 0.5) * 8;
+  this.alpha = Math.random() * 0.4 + 0.1;
+  this.color = colors[Math.floor(Math.random() * colors.length)];
+}
+Confetto.prototype.update = function() {
+  this.y += this.speedY;
+  this.x += this.speedX + Math.sin(this.y * 0.01) * 0.5;
+  this.rotation += this.rotSpeed;
+  if (this.y > innerHeight + 20) { Confetto.call(this, false); }
+};
+Confetto.prototype.draw = function() {
+  cfCtx.save();
+  cfCtx.globalAlpha = this.alpha;
+  cfCtx.translate(this.x, this.y);
+  cfCtx.rotate(this.rotation * Math.PI / 180);
+  cfCtx.fillStyle = this.color;
+  cfCtx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+  cfCtx.restore();
+};
+
+for (var j = 0; j < 60; j++) confetti.push(new Confetto(true));
+
+function animate() {
+  bgCtx.clearRect(0, 0, bgC.width, bgC.height);
+  bgParticles.forEach(function(p) { p.update(); p.draw(); });
+  fwCtx.clearRect(0, 0, fwC.width, fwC.height);
+  fireworks.forEach(function(fw) { fw.update(); fw.draw(); });
+  fireworks = fireworks.filter(function(fw) { return fw.particles.length > 0; });
+  cfCtx.clearRect(0, 0, cfC.width, cfC.height);
+  if (started) confetti.forEach(function(c) { c.update(); c.draw(); });
+  requestAnimationFrame(animate);
 }
 
-for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-function animateParticles() {
-  if (!animating) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => { p.update(); p.draw(); });
-  requestAnimationFrame(animateParticles);
-}
-
-function spawnHeart() {
-  const heart = document.createElement('div');
-  heart.className = 'floating-heart';
-  heart.textContent = ['\u2665', '\u2661', '\u2764', '\uD83D\uDC9B'][Math.floor(Math.random() * 4)];
-  heart.style.left = Math.random() * 100 + 'vw';
-  heart.style.bottom = '-20px';
-  heart.style.fontSize = (Math.random() * 1.2 + 0.6) + 'rem';
-  heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 9000);
-}
-
-function revealOnScroll() {
-  const els = document.querySelectorAll('[data-reveal]:not(.visible)');
-  els.forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85) { el.classList.add('visible'); }
+function revealElements() {
+  document.querySelectorAll('[data-anim]:not(.show)').forEach(function(el) {
+    var rect = el.getBoundingClientRect();
+    if (rect.top < innerHeight * 0.88) el.classList.add('show');
   });
 }
-window.addEventListener('scroll', revealOnScroll);
+addEventListener('scroll', revealElements);
 
-function startExperience() {
-  document.getElementById('intro').classList.add('hidden');
-  document.getElementById('content').style.display = 'block';
-  animating = true;
-  animateParticles();
-  setTimeout(revealOnScroll, 200);
-  setTimeout(revealOnScroll, 800);
-  setTimeout(revealOnScroll, 1400);
-  setInterval(spawnHeart, 2500);
-  setTimeout(spawnHeart, 1000);
-  setTimeout(spawnHeart, 1800);
+function autoFirework() {
+  if (!started) return;
+  fireworks.push(new HeartFirework(
+    Math.random() * innerWidth * 0.6 + innerWidth * 0.2,
+    Math.random() * innerHeight * 0.4 + innerHeight * 0.1
+  ));
+  setTimeout(autoFirework, 3000 + Math.random() * 4000);
 }
 
-document.addEventListener('click', () => {
-  try {
-    const ac = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 432;
-    gain.gain.value = 0.015;
-    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 3);
-    osc.connect(gain);
-    gain.connect(ac.destination);
-    osc.start();
-    osc.stop(ac.currentTime + 3);
-  } catch(e) {}
-}, { once: true });
-</script>
+function begin() {
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('content').style.display = 'block';
+  started = true;
+  setTimeout(function() { fireworks.push(new HeartFirework(innerWidth/2, innerHeight * 0.3)); }, 400);
+  setTimeout(function() { fireworks.push(new HeartFirework(innerWidth*0.3, innerHeight*0.25)); }, 700);
+  setTimeout(function() { fireworks.push(new HeartFirework(innerWidth*0.7, innerHeight*0.25)); }, 1000);
+  setTimeout(revealElements, 300);
+  setTimeout(revealElements, 700);
+  setTimeout(revealElements, 1100);
+  setTimeout(revealElements, 1500);
+  setTimeout(autoFirework, 3000);
+}
 
+animate();
+</script>
 </body>
 </html>
