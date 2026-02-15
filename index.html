@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Valentine's Day, Asher</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #0a0a0f;
+    color: #f0e6d3;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  canvas#particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    width: 90%;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .intro {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #0a0a0f;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: opacity 1.2s ease, visibility 1.2s ease;
+  }
+  .intro.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .intro-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: #c9a96e;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+  .intro-sub {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #665e50;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .heart-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fade-up 1.2s ease forwards;
+    animation-delay: 0.4s;
+  }
+  .heart-line .line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c9a96e, transparent);
+  }
+  .heart-line .heart {
+    font-size: 1.4rem;
+    color: #c9a96e;
+    animation: heartbeat 1.8s ease-in-out infinite;
+  }
+
+  .heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    opacity: 0;
+    background: linear-gradient(135deg, #f0e6d3 0%, #c9a96e 50%, #f0e6d3 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fade-up 1.4s ease forwards, shimmer 4s ease-in-out infinite;
+    animation-delay: 0.8s, 0s;
+  }
+
+  .subheading {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    color: #c9a96e;
+    margin-bottom: 50px;
+    opacity: 0;
+    animation: fade-up 1.4s ease forwards;
+    animation-delay: 1.2s;
+  }
+
+  .message {
+    text-align: left;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .message.visible {
+    animation: fade-up 1s ease forwards;
+  }
+  .message p {
+    font-size: clamp(1rem, 2.2vw, 1.15rem);
+    line-height: 1.85;
+    color: #d4c8b5;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  .message p strong {
+    color: #c9a96e;
+    font-weight: 500;
+  }
+  .message p em {
+    font-style: italic;
+    color: #e0d5c4;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c9a96e33, transparent);
+    margin: 40px 0;
+    opacity: 0;
+  }
+  .divider.visible { animation: fade-up 1s ease forwards; }
+
+  .signature {
+    text-align: center;
+    margin-top: 50px;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .signature.visible {
+    animation: fade-up 1.2s ease forwards;
+  }
+  .signature .love {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+    color: #c9a96e;
+    margin-bottom: 6px;
+  }
+  .signature .name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #f0e6d3;
+    letter-spacing: 0.02em;
+  }
+  .signature .date {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #665e50;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .floating-heart {
+    position: fixed;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    font-size: 1.2rem;
+    animation: float-up 6s ease-in forwards;
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.25); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+    60% { transform: scale(1); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 200% center; }
+  }
+  @keyframes float-up {
+    0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-100vh) rotate(45deg); }
+  }
+
+  .glow-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .glow-orb.one {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%);
+    top: 10%; left: -5%;
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+  .glow-orb.two {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(180,120,80,0.06) 0%, transparent 70%);
+    bottom: 5%; right: -5%;
+    animation: drift 25s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(40px, -30px); }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 40px 16px; }
+    .message p { font-size: 1rem; line-height: 1.75; }
+  }
+</style>
+</head>
+<body>
+
+<div class="intro" id="intro" onclick="startExperience()">
+  <div class="intro-text">A Message For You, Asher</div>
+  <div class="intro-sub">tap anywhere to open</div>
+</div>
+
+<div class="glow-orb one"></div>
+<div class="glow-orb two"></div>
+
+<canvas id="particles"></canvas>
+
+<div class="container" id="content" style="display:none;">
+
+  <div class="heart-line">
+    <div class="line"></div>
+    <div class="heart">&#10084;</div>
+    <div class="line"></div>
+  </div>
+
+  <h1 class="heading">Happy Valentine's Day, Asher</h1>
+  <p class="subheading">From Dada, with everything I've got</p>
+
+  <div class="message" data-reveal>
+    <p>
+      Hey buddy. I know Valentine's Day isn't just about romance &mdash;
+      it's about <strong>love</strong>. And there's nobody I love more fiercely
+      in this world than you.
+    </p>
+  </div>
+
+  <div class="message" data-reveal>
+    <p>
+      I think about you constantly. About the little boy who used to call me
+      <em>"Dada"</em> &mdash; and about the <strong>incredible young man</strong>
+      you've become at 21. You impress me in ways I can't even put into words.
+      Your heart, your mind, the way you carry yourself &mdash; you're everything
+      a father could dream of and so much more.
+    </p>
+  </div>
+
+  <div class="divider" data-reveal></div>
+
+  <div class="message" data-reveal>
+    <p>
+      I want you to know something: <strong>I'm proud of you.</strong>
+      Not for what you do, but for <em>who you are</em>.
+      You're kind. You're strong. You're thoughtful.
+      You make the world better just by being in it.
+    </p>
+  </div>
+
+  <div class="message" data-reveal>
+    <p>
+      I wish I could be with you today. But even when we're apart,
+      you're never far from my heart. Not for a second. Not ever.
+    </p>
+  </div>
+
+  <div class="divider" data-reveal></div>
+
+  <div class="message" data-reveal>
+    <p>
+      Keep being exactly who you are, Asher. The world needs people like you.
+      <strong>I need people like you.</strong> You're my greatest blessing,
+      my proudest achievement, and my best friend.
+    </p>
+  </div>
+
+  <div class="signature" data-reveal>
+    <div class="love">With all my love, always and forever,</div>
+    <div class="name">Dada</div>
+    <div class="date">Valentine's Day &bull; February 14, 2026</div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let animating = false;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.4 + 0.1;
+    this.pulse = Math.random() * Math.PI * 2;
+    this.pulseSpeed = Math.random() * 0.02 + 0.005;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.pulse += this.pulseSpeed;
+    if (this.x < -10 || this.x > canvas.width + 10 ||
+        this.y < -10 || this.y > canvas.height + 10) { this.reset(); }
+  }
+  draw() {
+    const o = this.opacity * (0.6 + 0.4 * Math.sin(this.pulse));
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(201, 169, 110, ${o})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function animateParticles() {
+  if (!animating) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+
+function spawnHeart() {
+  const heart = document.createElement('div');
+  heart.className = 'floating-heart';
+  heart.textContent = ['\u2665', '\u2661', '\u2764', '\uD83D\uDC9B'][Math.floor(Math.random() * 4)];
+  heart.style.left = Math.random() * 100 + 'vw';
+  heart.style.bottom = '-20px';
+  heart.style.fontSize = (Math.random() * 1.2 + 0.6) + 'rem';
+  heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 9000);
+}
+
+function revealOnScroll() {
+  const els = document.querySelectorAll('[data-reveal]:not(.visible)');
+  els.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) { el.classList.add('visible'); }
+  });
+}
+window.addEventListener('scroll', revealOnScroll);
+
+function startExperience() {
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('content').style.display = 'block';
+  animating = true;
+  animateParticles();
+  setTimeout(revealOnScroll, 200);
+  setTimeout(revealOnScroll, 800);
+  setTimeout(revealOnScroll, 1400);
+  setInterval(spawnHeart, 2500);
+  setTimeout(spawnHeart, 1000);
+  setTimeout(spawnHeart, 1800);
+}
+
+document.addEventListener('click', () => {
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 432;
+    gain.gain.value = 0.015;
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 3);
+    osc.connect(gain);
+    gain.connect(ac.destination);
+    osc.start();
+    osc.stop(ac.currentTime + 3);
+  } catch(e) {}
+}, { once: true });
+</script>
+
+</body>
+</html>
